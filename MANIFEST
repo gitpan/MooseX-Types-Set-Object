@@ -1,7 +1,14 @@
-lib/MooseX/Types/Set/Object.pm
+Changes
+LICENSE
+MANIFEST
+META.json
+META.yml
 Makefile.PL
-MANIFEST			This list of files
-MANIFEST.SKIP
+README
+dist.ini
+lib/MooseX/Types/Set/Object.pm
 t/basic.t
-META.yml                                 Module meta-data (added by MakeMaker)
-SIGNATURE                                Public-key signature (added by MakeMaker)
+t/release-eol.t
+t/release-no-tabs.t
+t/release-pod-coverage.t
+t/release-pod-syntax.t

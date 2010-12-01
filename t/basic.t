@@ -4,47 +4,53 @@ use strict;
 use warnings;
 
 use Test::More 'no_plan';
-use Test::Exception;
+use Test::Fatal;
 
 use ok 'MooseX::Types::Set::Object';
 
 {
-	package Blah;
-	use Moose;
+    package Blah;
+    use Moose;
 
-	has stuff => (
-		isa => "Set::Object",
-		is  => "rw",
-		coerce => 1,
-	);
+    has stuff => (
+        isa => "Set::Object",
+        is  => "rw",
+        coerce => 1,
+    );
 
-	has junk => (
-		isa => "Set::Object",
-		is  => "rw",
-	);
+    has junk => (
+        isa => "Set::Object",
+        is  => "rw",
+    );
 
-	has misc => (
-		isa => "Set::Object[Foo]",
-		is  => "rw",
-		coerce => 1,
-	);
+    has misc => (
+        isa => "Set::Object[Foo]",
+        is  => "rw",
+        coerce => 1,
+    );
 
-	package Foo;
-	use Moose;
+    has moo => (
+        isa    => 'ArrayRef',
+        is     => 'rw',
+        coerce => 1,
+    );
 
-	package Bar;
-	use Moose;
-	
-	extends qw(Foo);
+    package Foo;
+    use Moose;
 
-	package Gorch;
-	use Moose;
+    package Bar;
+    use Moose;
+
+    extends qw(Foo);
+
+    package Gorch;
+    use Moose;
 }
 
 my @objs = (
-	"foo",
-	Foo->new,
-	[ ],
+    "foo",
+    Foo->new,
+    [ ],
 );
 
 my $obj = Blah->new( stuff => \@objs );
@@ -53,29 +59,29 @@ isa_ok( $obj->stuff, "Set::Object" );
 is( $obj->stuff->size, 3, "three items" );
 
 foreach my $item ( @objs ) {
-	ok( $obj->stuff->includes($item), "'$item' is in the set");
+    ok( $obj->stuff->includes($item), "'$item' is in the set");
 }
 
-throws_ok { Blah->new( junk => [ ] ) } qr/type.*Set::Object/i, "fails without coercion";
+like( exception { Blah->new( junk => [ ] ) }, qr/type.*Set::Object/i, "fails without coercion");
 
-throws_ok { Blah->new( junk => \@objs ) } qr/type.*Set::Object/i, "fails without coercion";
+like( exception { Blah->new( junk => \@objs ) }, qr/type.*Set::Object/i, "fails without coercion");
 
 
 {
-	local $TODO = "coercion for parametrized types seems borked";
-	lives_ok { Blah->new( misc => [ ] ) } "doesn't fail with empty array for parametrized set type";
+    local $TODO = "coercion for parameterized types seems borked";
+    is( exception { Blah->new( misc => [ ] ) }, undef, "doesn't fail with empty array for parameterized set type");
 }
 
-lives_ok { Blah->new( misc => Set::Object->new ) } "doesn't fail with empty set for parametrized set type";
+is( exception { Blah->new( misc => Set::Object->new ) }, undef, "doesn't fail with empty set for parameterized set type");
 
-throws_ok { Blah->new( misc => \@objs ) } qr/Foo/, "fails on parametrized set type";
+like( exception { Blah->new( misc => \@objs ) }, qr/Foo/, "fails on parameterized set type");
 
-throws_ok { Blah->new( misc => Set::Object->new(\@objs) ) } qr/Foo/, "fails on parametrized set type";
+like( exception { Blah->new( misc => Set::Object->new(@objs) ) }, qr/Foo/, "fails on parameterized set type");
 
 {
-	local $TODO = "coercion for parametrized types seems borked";
-	lives_ok { Blah->new( misc => [ Foo->new, Bar->new ] ) } "no error on coercion from array filled with the right type";
+    local $TODO = "coercion for parameterized types seems borked";
+    is( exception { Blah->new( misc => [ Foo->new, Bar->new ] ) }, undef, "no error on coercion from array filled with the right type");
 }
 
-lives_ok { Blah->new( misc => Set::Object->new([ Foo->new, Bar->new ]) ) } "no error with set filled with the right type";
-throws_ok { Blah->new( misc => Set::Object->new([ Foo->new, Gorch->new, Bar->new ]) ) } qr/Foo/, "error with set that has a naughty object";
+is( exception { Blah->new( misc => Set::Object->new(Foo->new, Bar->new) ) }, undef, "no error with set filled with the right type");
+like( exception { Blah->new( misc => Set::Object->new(Foo->new, Gorch->new, Bar->new) ) }, qr/Foo/, "error with set that has a naughty object");

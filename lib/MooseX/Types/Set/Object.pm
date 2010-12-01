@@ -1,34 +1,36 @@
-#!/usr/bin/perl
-
 package MooseX::Types::Set::Object;
-use base qw(MooseX::Types::Base);
+BEGIN {
+  $MooseX::Types::Set::Object::AUTHORITY = 'cpan:NUFFIN';
+}
+BEGIN {
+  $MooseX::Types::Set::Object::VERSION = '0.03';
+}
+# ABSTRACT: Set::Object type with coercions and stuff.
 
-use strict;
-use warnings;
-
-our $VERSION = "0.02";
-
-use Set::Object ();
-use Scalar::Util ();
 
 use MooseX::Types;
 use MooseX::Types::Moose qw(Object ArrayRef);
 
-class_type "Set::Object"; # FIXME parametrizable
+use Set::Object ();
+use Scalar::Util ();
+
+class_type "Set::Object"; # FIXME parameterizable
 
 coerce "Set::Object",
-	from ArrayRef,
-	via { Set::Object->new(@$_) };
+    from ArrayRef,
+    via { Set::Object->new(@$_) };
 
 coerce ArrayRef,
-	from "Set::Object",
-	via { $_->members };
+    from "Set::Object",
+    via { [$_->members] };
 
-__PACKAGE__
+1;
+
 
 __END__
-
 =pod
+
+=encoding utf-8
 
 =head1 NAME
 
@@ -36,28 +38,28 @@ MooseX::Types::Set::Object - Set::Object type with coercions and stuff.
 
 =head1 SYNOPSIS
 
-	package Foo;
-	use Moose;
+    package Foo;
+    use Moose;
 
-	use MooseX::Types::Set::Object;
+    use MooseX::Types::Set::Object;
 
-	has children => (
-		isa      => "Set::Object",
-		accessor => "transition_set",
-		coerce   => 1, # also accept array refs
-		handles  => {
-			children     => "members",
-			add_child    => "insert",
-			remove_child => "remove",
-			# See Set::Object for all the methods you could delegate
-		},
-	);
+    has children => (
+        isa      => "Set::Object",
+        accessor => "transition_set",
+        coerce   => 1, # also accept array refs
+        handles  => {
+            children     => "members",
+            add_child    => "insert",
+            remove_child => "remove",
+            # See Set::Object for all the methods you could delegate
+        },
+    );
 
-	# ...
+    # ...
 
-	my $foo = Foo->new( children => [ @objects ] );
+    my $foo = Foo->new( children => [ @objects ] );
 
-	$foo->add_child( $obj );
+    $foo->add_child( $obj );
 
 =head1 DESCRIPTION
 
@@ -80,20 +82,16 @@ C<ArrayRef> type.
 L<Set::Object>, L<MooseX::AttributeHandlers>, L<MooseX::Types>,
 L<Moose::Util::TypeConstraints>
 
-=head1 VERSION CONTROL
-
-This module is maintained using Darcs. You can get the latest version from
-L<http://nothingmuch.woobling.org/code>, and use C<darcs send> to commit
-changes.
-
 =head1 AUTHOR
 
-Yuval Kogman E<lt>nothingmuch@woobling.orgE<gt>
+Yuval Kogman <nothingmuch@woobling.org>
 
-=head1 COPYRIGHT
+=head1 COPYRIGHT AND LICENSE
 
-	Copyright (c) 2008 Yuval Kogman. All rights reserved
-	This program is free software; you can redistribute
-	it and/or modify it under the same terms as Perl itself.
+This software is copyright (c) 2010 by Yuval Kogman.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
+
