@@ -1,9 +1,7 @@
-#!/usr/bin/perl
-
 use strict;
 use warnings;
 
-use Test::More 'no_plan';
+use Test::More 0.88;
 use Test::Fatal;
 
 use ok 'MooseX::Types::Set::Object';
@@ -21,12 +19,6 @@ use ok 'MooseX::Types::Set::Object';
     has junk => (
         isa => "Set::Object",
         is  => "rw",
-    );
-
-    has misc => (
-        isa => "Set::Object[Foo]",
-        is  => "rw",
-        coerce => 1,
     );
 
     has moo => (
@@ -66,22 +58,4 @@ like( exception { Blah->new( junk => [ ] ) }, qr/type.*Set::Object/i, "fails wit
 
 like( exception { Blah->new( junk => \@objs ) }, qr/type.*Set::Object/i, "fails without coercion");
 
-
-{
-    local $TODO = "coercion for parameterized types seems borked";
-    is( exception { Blah->new( misc => [ ] ) }, undef, "doesn't fail with empty array for parameterized set type");
-}
-
-is( exception { Blah->new( misc => Set::Object->new ) }, undef, "doesn't fail with empty set for parameterized set type");
-
-like( exception { Blah->new( misc => \@objs ) }, qr/Foo/, "fails on parameterized set type");
-
-like( exception { Blah->new( misc => Set::Object->new(@objs) ) }, qr/Foo/, "fails on parameterized set type");
-
-{
-    local $TODO = "coercion for parameterized types seems borked";
-    is( exception { Blah->new( misc => [ Foo->new, Bar->new ] ) }, undef, "no error on coercion from array filled with the right type");
-}
-
-is( exception { Blah->new( misc => Set::Object->new(Foo->new, Bar->new) ) }, undef, "no error with set filled with the right type");
-like( exception { Blah->new( misc => Set::Object->new(Foo->new, Gorch->new, Bar->new) ) }, qr/Foo/, "error with set that has a naughty object");
+done_testing;

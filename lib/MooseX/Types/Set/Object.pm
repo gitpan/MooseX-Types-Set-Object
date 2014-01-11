@@ -1,20 +1,19 @@
 package MooseX::Types::Set::Object;
+{
+  $MooseX::Types::Set::Object::VERSION = '0.04';
+}
+# git description: MooseX-Types-Set-Object-0.03-11-g7907c3a
+
 BEGIN {
   $MooseX::Types::Set::Object::AUTHORITY = 'cpan:NUFFIN';
 }
-BEGIN {
-  $MooseX::Types::Set::Object::VERSION = '0.03';
-}
 # ABSTRACT: Set::Object type with coercions and stuff.
-
 
 use MooseX::Types;
 use MooseX::Types::Moose qw(Object ArrayRef);
-
 use Set::Object ();
-use Scalar::Util ();
 
-class_type "Set::Object"; # FIXME parameterizable
+class_type "Set::Object"; # FIXME not parameterizable
 
 coerce "Set::Object",
     from ArrayRef,
@@ -26,15 +25,21 @@ coerce ArrayRef,
 
 1;
 
-
 __END__
+
 =pod
 
-=encoding utf-8
+=encoding UTF-8
+
+=for :stopwords יובל קוג'מן (Yuval Kogman) Yuval Kogman Florian Ragwitz Karen Etheridge
 
 =head1 NAME
 
 MooseX::Types::Set::Object - Set::Object type with coercions and stuff.
+
+=head1 VERSION
+
+version 0.04
 
 =head1 SYNOPSIS
 
@@ -63,8 +68,11 @@ MooseX::Types::Set::Object - Set::Object type with coercions and stuff.
 
 =head1 DESCRIPTION
 
-This module provides Moose type constraints (see
+This module provides a Moose type constraint (see
 L<Moose::Util::TypeConstraints>, L<MooseX::Types>).
+Note that this constraint and its coercions are B<global>, not simply limited to the scope that
+imported it -- in this way it acts like a regular L<Moose> type constraint,
+rather than one from L<MooseX::Types>.
 
 =head1 TYPES
 
@@ -84,14 +92,31 @@ L<Moose::Util::TypeConstraints>
 
 =head1 AUTHOR
 
-Yuval Kogman <nothingmuch@woobling.org>
+יובל קוג'מן (Yuval Kogman) <nothingmuch@woobling.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Yuval Kogman.
+This software is copyright (c) 2008 by Yuval Kogman.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
-=cut
+=head1 CONTRIBUTORS
 
+=over 4
+
+=item *
+
+Florian Ragwitz <rafl@debian.org>
+
+=item *
+
+Karen Etheridge <ether@cpan.org>
+
+=item *
+
+Yuval Kogman <nothingmuch@woobling.org>
+
+=back
+
+=cut
